@@ -1,0 +1,53 @@
+title: MSBuild Outside The Build Toolchain Paths Making An External Network Connection
+id: 0f8731159b815984a46758a2b6b59cd3
+status: experimental
+description: |
+  msbuild.exe runs from somewhere other than the Visual Studio, .NET Framework
+  or dotnet SDK directories and opens an outbound connection to a non-internal
+  address. MSBuild is a trusted, signed proxy for arbitrary code (inline tasks
+  in a project file); a copy dropped into a writable directory that then talks
+  to the internet is a masquerade, not a build. The internal range here is
+  the synthetic 192.0.2.0/24 (RFC 5737); a deployment substitutes its own.
+references:
+  - https://attack.mitre.org/techniques/T1127/001/
+  - https://attack.mitre.org/techniques/T1036/005/
+author: Mark Peters
+date: 2026-09-18
+tags:
+  - attack.t1127.001
+  - attack.t1036.005
+  - attack.defense-evasion
+logsource:
+  product: windows
+  category: network_connection
+detection:
+  selection:
+    Image|endswith: '\msbuild.exe'
+    Initiated: 'true'
+  filter_build_toolchain_paths:
+    Image|startswith:
+      - 'C:\Program Files\Microsoft Visual Studio\'
+      - 'C:\Program Files (x86)\Microsoft Visual Studio\'
+      - 'C:\Program Files\dotnet\'
+      - 'C:\Windows\Microsoft.NET\'
+  filter_internal_destination:
+    DestinationIp|cidr: '192.0.2.0/24'
+  condition: selection and not 1 of filter_*
+falsepositives:
+  - Developers running a portable or self-built MSBuild from a source checkout that restores packages
+  - Build agents installed outside Program Files that pull from a public package feed
+level: high
+custom:
+  data_sources:
+    - Sysmon Event ID 3 (network connection) or an EDR network-connection event with the image path
+  do_not_alert_when: |
+    The host is a designated build agent and the destination is the package
+    feed it is configured for; add the path and destination to the filters
+    rather than muting the rule. On a workstation with no developer tooling
+    installed this should page immediately. Prefer the Sysmon 3 event over
+    proxy logs for this one: the proxy sees the destination but not the image
+    path, and the path is the whole signal.
+  detection_health:
+    added: 2026-09-18
+    last_reviewed: 2026-09-18
+    owner: Mark Peters

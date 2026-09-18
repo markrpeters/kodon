@@ -1,0 +1,62 @@
+title: Burst Of RC4 Kerberos Service Tickets Requested From One Host
+id: 3a1f9acbac3f57a4b7030b580b5c026c
+name: kerberos_rc4_tgs_volume_single_host_base
+status: experimental
+description: |
+  Successful TGS requests with RC4 (0x17) encryption for user service
+  accounts, ten or more from one source address within ten minutes. Modern
+  domains negotiate AES; a client asking for RC4 tickets is downgrading on
+  purpose so the ticket can be cracked offline, and asking for many of them at
+  once is the Kerberoasting sweep. Machine accounts and krbtgt are excluded
+  because their tickets are not crackable targets and they add noise.
+references:
+  - https://attack.mitre.org/techniques/T1558/003/
+author: Mark Peters
+date: 2026-09-18
+tags:
+  - attack.t1558.003
+  - attack.credential-access
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4769
+    TicketEncryptionType: '0x17'
+    Status: '0x0'
+  filter_machine_accounts:
+    ServiceName|endswith: '$'
+  filter_krbtgt:
+    ServiceName: 'krbtgt'
+  condition: selection and not 1 of filter_*
+falsepositives:
+  - Legacy applications or appliances that only speak RC4 and touch many services
+  - A monitoring host that authenticates to every service account on a schedule
+level: high
+custom:
+  data_sources:
+    - Windows Security Event ID 4769 from domain controllers
+  do_not_alert_when: |
+    The source is a known legacy client on the RC4 exception list, or the
+    service accounts requested are the same small set every day. One RC4
+    ticket is a hunt lead and a hygiene ticket for the account owner; a burst
+    across many distinct service accounts from one workstation is the alert.
+    Once the domain has RC4 disabled, retire this rule and watch for the
+    failure events instead.
+  detection_health:
+    added: 2026-09-18
+    last_reviewed: 2026-09-18
+    owner: Mark Peters
+---
+title: Burst Of RC4 Kerberos Service Tickets Requested From One Host (correlation)
+status: experimental
+correlation:
+  type: event_count
+  rules:
+    - kerberos_rc4_tgs_volume_single_host_base
+  group-by:
+    - IpAddress
+  timespan: 10m
+  condition:
+    gte: 10
+level: high

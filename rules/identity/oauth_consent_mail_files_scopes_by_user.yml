@@ -1,0 +1,54 @@
+title: User Consent Granted To An Application Requesting Mail Or Files Scopes
+id: 83d21d57177955bb94a413f0851abd35
+status: experimental
+description: |
+  A non-admin user consents to an application that asks for mailbox or file
+  permissions. Consent phishing does not need a password: the token the app
+  receives survives password resets and MFA. The audit record does not say
+  whether the publisher is verified; that enrichment (verified publisher,
+  app age, consent count across the directory) belongs in triage.
+references:
+  - https://attack.mitre.org/techniques/T1528/
+author: Mark Peters
+date: 2026-09-18
+tags:
+  - attack.t1528
+  - attack.credential-access
+logsource:
+  product: azure
+  service: auditlogs
+detection:
+  selection:
+    OperationName: 'Consent to application'
+    Result: success
+    ConsentContext.IsAdminConsent: 'False'
+    ConsentAction.Permissions|contains:
+      - Mail.Read
+      - Mail.ReadWrite
+      - Mail.Send
+      - MailboxSettings.ReadWrite
+      - Files.Read.All
+      - Files.ReadWrite.All
+  filter_approved_apps:
+    AppDisplayName:
+      - 'Example Approved Mail Client'
+      - 'Example Backup Service'
+  condition: selection and not filter_approved_apps
+falsepositives:
+  - Legitimate productivity add-ins that genuinely need mailbox access
+  - The first user in the organisation to adopt a new, benign integration
+level: medium
+custom:
+  data_sources:
+    - Entra ID audit log (Consent to application)
+  do_not_alert_when: |
+    The application is in the approved-app list, the publisher is verified and
+    the same app already has consents from many users over months. Do alert
+    when the app is new to the directory, the publisher is unverified, and the
+    scopes include Mail.Read or offline_access together: that is the consent
+    phishing shape. offline_access alone is not a signal; nearly every app
+    requests it.
+  detection_health:
+    added: 2026-09-18
+    last_reviewed: 2026-09-18
+    owner: Mark Peters

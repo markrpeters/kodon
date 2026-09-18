@@ -1,0 +1,71 @@
+# pySigma processing pipeline: Sigma taxonomy field names -> the synthetic
+# canonical schema that tests/samples/*.jsonl use. This is the PUBLIC pipeline.
+# A deployment (or the private forensics pipeline that consumes this package)
+# ships its own file of exactly this shape, mapping the same Sigma names onto
+# its own columns; nothing else changes.
+name: kodon synthetic canonical schema
+priority: 20
+transformations:
+  - id: table
+    type: set_state
+    key: table
+    val: events
+  - id: timestamp_field
+    type: set_state
+    key: timestamp_field
+    val: ts
+  - id: field_names
+    type: field_name_mapping
+    mapping:
+      # windows process_creation / network_connection (Sysmon-style names)
+      Image: image
+      CommandLine: command_line
+      ParentImage: parent_image
+      ParentCommandLine: parent_command_line
+      OriginalFileName: original_file_name
+      User: user
+      ComputerName: host
+      DestinationIp: dst_ip
+      DestinationPort: dst_port
+      Initiated: initiated
+      # windows security (4769)
+      EventID: event_id
+      TicketEncryptionType: ticket_encryption_type
+      ServiceName: service_name
+      TargetUserName: target_user_name
+      IpAddress: src_ip
+      Status: status
+      Computer: host
+      # okta system log
+      eventType: event_type
+      outcome.result: outcome
+      actor.alternateId: user
+      client.geographicalContext.country: src_country
+      client.ipAddress: src_ip
+      # m365 exchange audit
+      eventSource: event_source
+      eventName: operation
+      Parameters: parameters
+      UserId: user
+      ClientIP: src_ip
+      # azure audit logs
+      OperationName: operation
+      Result: result
+      ConsentContext.IsAdminConsent: is_admin_consent
+      ConsentAction.Permissions: permissions
+      AppDisplayName: app_display_name
+      InitiatedBy: user
+      # zeek conn / smtp
+      id.orig_h: src_ip
+      id.resp_h: dst_ip
+      id.resp_p: dst_port
+      proto: proto
+      service: service
+      conn_state: conn_state
+      duration: duration
+      orig_bytes: orig_bytes
+      resp_bytes: resp_bytes
+      mailfrom: mail_from
+      rcptto: rcpt_to
+      subject: subject
+      user_agent: user_agent

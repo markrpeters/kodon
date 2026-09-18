@@ -1,0 +1,49 @@
+title: Inbox Rule Created Or Modified To Forward Mail To An External Domain
+id: c00819ee71995349afff9d164ce1d814
+status: experimental
+description: |
+  A mailbox rule that forwards or redirects mail to an address outside the
+  organisation's accepted domains. This is the persistence step of business
+  email compromise: the attacker keeps reading the thread after the password
+  is reset. The internal-domain filter uses example.com as the accepted
+  domain; a deployment substitutes its own list.
+references:
+  - https://attack.mitre.org/techniques/T1114/003/
+author: Mark Peters
+date: 2026-09-18
+tags:
+  - attack.t1114.003
+  - attack.collection
+logsource:
+  product: m365
+  service: exchange
+detection:
+  selection:
+    eventSource: Exchange
+    eventName:
+      - New-InboxRule
+      - Set-InboxRule
+    Parameters|contains:
+      - ForwardTo
+      - ForwardingSmtpAddress
+      - RedirectTo
+  filter_internal_recipient:
+    Parameters|re: '(?i)(ForwardTo|ForwardingSmtpAddress|RedirectTo)=[^;]*@example\.com'
+  condition: selection and not filter_internal_recipient
+falsepositives:
+  - Staff forwarding to a personal mailbox in breach of policy (still worth a conversation)
+  - Migration or shared-mailbox setups that forward to a partner domain during a transition
+level: high
+custom:
+  data_sources:
+    - Microsoft 365 Unified Audit Log, Exchange workload (New-InboxRule, Set-InboxRule)
+  do_not_alert_when: |
+    The external domain is a partner domain that appears in the accepted-domain
+    or transport-rule allowlist, or the rule was created by an administrator
+    during a documented migration. Never suppress on the user being an
+    executive: those are the mailboxes attackers pick. If the rule also deletes
+    or marks as read, escalate rather than suppress.
+  detection_health:
+    added: 2026-09-18
+    last_reviewed: 2026-09-18
+    owner: Mark Peters

@@ -1,0 +1,58 @@
+title: Long-Lived Outbound TCP Session To An External High Port With No Recognised Service
+id: 203d56ee3252567ea4b73d22b39d3ba2
+status: experimental
+description: |
+  A fully established outbound TCP connection from an internal host to an
+  external address on an ephemeral port, that stays open for two minutes or
+  more and carries no protocol the sensor recognises. A reverse shell is an
+  interactive session that the sensor cannot name; its shape is the absence of
+  a service on a port nothing legitimate uses, sustained. Written from the
+  pattern: when the payload is unknown, the connection shape is the only
+  trace of the callback.
+references:
+  - https://attack.mitre.org/techniques/T1571/
+author: Mark Peters
+date: 2026-09-18
+tags:
+  - attack.t1571
+  - attack.command-and-control
+logsource:
+  product: zeek
+  service: conn
+detection:
+  selection:
+    proto: tcp
+    service: null
+    conn_state:
+      - SF
+      - S1
+    duration|gte: 120
+    id.resp_p|gte: 1024
+  filter_internal_destination:
+    id.resp_h|cidr: '192.0.2.0/24'
+  filter_known_high_ports:
+    id.resp_p:
+      - 3478
+      - 5222
+      - 5223
+      - 5228
+      - 8080
+      - 8443
+  condition: selection and not 1 of filter_*
+falsepositives:
+  - Game, VoIP and peer-to-peer clients on custom ports the sensor has no analyser for
+  - Database or message-queue clients talking to a cloud endpoint on a non-standard port
+level: medium
+custom:
+  data_sources:
+    - Zeek conn.log with the service field populated by protocol analysers
+  do_not_alert_when: |
+    The host is a server with a documented outbound integration on that port,
+    or the destination belongs to a cloud provider range the estate uses for
+    databases and queues. Do not raise the duration threshold to reduce noise;
+    lower the port list instead. On a workstation, a two-minute unnamed
+    session to a residential or hosting-provider address should page.
+  detection_health:
+    added: 2026-09-18
+    last_reviewed: 2026-09-18
+    owner: Mark Peters

@@ -1,0 +1,2 @@
+{"ts": "2026-03-04T09:01:00Z", "src_ip": "192.0.2.11", "dst_ip": "198.51.100.5", "dst_port": 443, "proto": "tcp", "service": "ssl", "conn_state": "SF", "duration": 3.2, "orig_bytes": 2100, "resp_bytes": 14000}
+{"ts": "2026-03-04T09:04:00Z", "src_ip": "192.0.2.11", "dst_ip": "198.51.100.66", "dst_port": 4444, "proto": "tcp", "service": null, "conn_state": "SF", "duration": 1800.0, "orig_bytes": 9200, "resp_bytes": 3100}

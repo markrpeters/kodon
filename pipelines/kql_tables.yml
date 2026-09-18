@@ -1,0 +1,72 @@
+# pySigma processing pipeline for the kql target: picks the Sentinel table for
+# each logsource. Field names are left as the Sigma taxonomy names on purpose;
+# mapping them onto the table's columns is deployment-specific (Defender XDR
+# and ASIM pipelines exist in pysigma-backend-kusto for the Windows categories).
+# Zeek's dotted names are renamed because a dotted name is not a KQL identifier.
+name: kodon kql table selection
+priority: 20
+transformations:
+  - id: t_process_creation
+    type: set_state
+    key: query_table
+    val: DeviceProcessEvents
+    rule_conditions:
+      - type: logsource
+        product: windows
+        category: process_creation
+  - id: t_network_connection
+    type: set_state
+    key: query_table
+    val: DeviceNetworkEvents
+    rule_conditions:
+      - type: logsource
+        product: windows
+        category: network_connection
+  - id: t_security
+    type: set_state
+    key: query_table
+    val: SecurityEvent
+    rule_conditions:
+      - type: logsource
+        product: windows
+        service: security
+  - id: t_okta
+    type: set_state
+    key: query_table
+    val: Okta_CL
+    rule_conditions:
+      - type: logsource
+        product: okta
+        service: okta
+  - id: t_exchange
+    type: set_state
+    key: query_table
+    val: OfficeActivity
+    rule_conditions:
+      - type: logsource
+        product: m365
+        service: exchange
+  - id: t_auditlogs
+    type: set_state
+    key: query_table
+    val: AuditLogs
+    rule_conditions:
+      - type: logsource
+        product: azure
+        service: auditlogs
+  - id: t_zeek_conn
+    type: set_state
+    key: query_table
+    val: zeek_conn_CL
+    rule_conditions:
+      - type: logsource
+        product: zeek
+        service: conn
+  - id: t_zeek_smtp
+    type: set_state
+    key: query_table
+    val: zeek_smtp_CL
+    rule_conditions:
+      - type: logsource
+        product: zeek
+        service: smtp

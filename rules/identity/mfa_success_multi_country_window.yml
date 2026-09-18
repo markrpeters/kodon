@@ -1,0 +1,62 @@
+title: Successful MFA Sign-ins For One User From Two Countries Within An Hour
+id: 2fa297a4d12c5d839d4af77c688ef574
+name: mfa_success_multi_country_window_base
+status: experimental
+description: |
+  A user completes MFA from more than one country inside a one-hour window.
+  The signal is not the foreign country; it is the user being in two places
+  at once. Written from the pattern of an MFA-fatigue / session-theft chain
+  where the first sign-in was the victim and the second was the attacker with
+  a stolen session or a pushed-through prompt.
+references:
+  - https://attack.mitre.org/techniques/T1078/004/
+  - https://attack.mitre.org/techniques/T1621/
+author: Mark Peters
+date: 2026-09-18
+tags:
+  - attack.t1078.004
+  - attack.t1621
+  - attack.initial-access
+  - attack.credential-access
+logsource:
+  product: okta
+  service: okta
+detection:
+  selection:
+    eventType:
+      - user.authentication.auth_via_mfa
+      - user.session.start
+    outcome.result: SUCCESS
+  condition: selection
+falsepositives:
+  - Travellers who sign in from the departure and arrival country within the hour
+  - Mobile carriers and VPN egress points geolocated to a neighbouring country
+  - Shared service identities used by staff in several regions
+level: high
+custom:
+  data_sources:
+    - Okta System Log (user.authentication.auth_via_mfa, user.session.start)
+  do_not_alert_when: |
+    Both countries are in the user's normal travel profile, or one of the
+    source addresses belongs to a corporate VPN or mobile carrier that
+    geolocates badly. Alert on the pair, not on the foreign country alone:
+    a single foreign sign-in is a hunt lead, two countries in an hour is a
+    page. Border-adjacent country pairs deserve a lower priority queue.
+  detection_health:
+    added: 2026-09-18
+    last_reviewed: 2026-09-18
+    owner: Mark Peters
+---
+title: Successful MFA Sign-ins For One User From Two Countries Within An Hour (correlation)
+status: experimental
+correlation:
+  type: value_count
+  rules:
+    - mfa_success_multi_country_window_base
+  group-by:
+    - actor.alternateId
+  timespan: 1h
+  condition:
+    gte: 2
+    field: client.geographicalContext.country
+level: high

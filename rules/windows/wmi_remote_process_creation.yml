@@ -1,0 +1,61 @@
+title: Process Created Remotely Through WMI
+id: 407db2f93d935d6992999a4a59b64852
+status: experimental
+description: |
+  Either side of a WMI remote execution. On the target, the WMI provider host
+  spawns a shell or a script host, which is how a Win32_Process.Create call
+  lands. On the source, wmic.exe is invoked with /node: and process call
+  create. Written from the pattern: the WMI leg of a lateral move leaves no
+  network logon worth reading, so the process tree is where it shows.
+references:
+  - https://attack.mitre.org/techniques/T1047/
+author: Mark Peters
+date: 2026-09-18
+tags:
+  - attack.t1047
+  - attack.execution
+  - attack.lateral-movement
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_target:
+    ParentImage|endswith: '\WmiPrvSE.exe'
+    Image|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\rundll32.exe'
+      - '\regsvr32.exe'
+      - '\mshta.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\certutil.exe'
+  selection_source:
+    Image|endswith: '\wmic.exe'
+    CommandLine|contains|all:
+      - '/node:'
+      - 'process'
+      - 'call'
+      - 'create'
+  filter_endpoint_management:
+    User: 'svc-endpoint-mgmt'
+  condition: 1 of selection_* and not filter_endpoint_management
+falsepositives:
+  - Endpoint management and software deployment agents that execute via WMI under a service account
+  - Administrators using wmic /node: for remote inventory or fixes
+level: high
+custom:
+  data_sources:
+    - Sysmon Event ID 1 or Windows Security 4688 (parent image and command line required)
+  do_not_alert_when: |
+    The account is the endpoint-management service account and the child is
+    the agent's own installer; filter on the account, never on the child
+    process name, because cmd.exe under WmiPrvSE is exactly what the agent
+    and the attacker both look like. A single wmic /node: from an admin
+    workstation is a hunt; the same from a standard user or towards more than
+    a couple of hosts is an alert.
+  detection_health:
+    added: 2026-09-18
+    last_reviewed: 2026-09-18
+    owner: Mark Peters

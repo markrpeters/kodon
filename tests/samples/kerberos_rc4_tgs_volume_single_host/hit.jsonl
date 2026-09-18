@@ -1,0 +1,16 @@
+{"ts": "2026-03-04T10:30:00Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-sql", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T10:30:30Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-web", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T10:31:00Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-backup", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T10:31:30Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-print", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T10:32:00Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-monitor", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T10:32:30Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-ci", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T10:33:00Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-vault", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T10:33:30Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-wiki", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T10:34:00Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-erp", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T10:34:30Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-crm", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T10:35:00Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-hr", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T10:35:30Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.77", "service_name": "svc-mail", "target_user_name": "bob", "ticket_encryption_type": "0x17", "status": "0x0"}
+{"ts": "2026-03-04T09:00:00Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.10", "service_name": "svc-web", "target_user_name": "alice", "ticket_encryption_type": "0x12", "status": "0x0"}
+{"ts": "2026-03-04T09:07:00Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.10", "service_name": "svc-web", "target_user_name": "alice", "ticket_encryption_type": "0x12", "status": "0x0"}
+{"ts": "2026-03-04T09:14:00Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.10", "service_name": "svc-web", "target_user_name": "alice", "ticket_encryption_type": "0x12", "status": "0x0"}
+{"ts": "2026-03-04T09:21:00Z", "host": "HOST-DC1", "event_id": 4769, "src_ip": "192.0.2.10", "service_name": "svc-web", "target_user_name": "alice", "ticket_encryption_type": "0x12", "status": "0x0"}

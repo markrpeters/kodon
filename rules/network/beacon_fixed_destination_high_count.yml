@@ -1,0 +1,73 @@
+title: Many Short Small Connections To One External Host And Port Within An Hour
+id: a7b4b517f7e055318594854793c1f7a1
+name: beacon_fixed_destination_high_count_base
+status: experimental
+description: |
+  Twenty or more short, low-volume TCP connections from one internal host to
+  the same external address and web port inside an hour. This is the
+  count-based shape of a beacon; Sigma cannot express interval regularity or
+  jitter, so this rule catches the volume and leaves periodicity scoring to a
+  follow-up query (roadmap). Long-lived and internal-destination connections
+  are filtered out so file transfers and internal services do not count.
+references:
+  - https://attack.mitre.org/techniques/T1071/001/
+author: Mark Peters
+date: 2026-09-18
+tags:
+  - attack.t1071.001
+  - attack.command-and-control
+logsource:
+  product: zeek
+  service: conn
+detection:
+  selection:
+    proto: tcp
+    id.resp_p:
+      - 80
+      - 443
+      - 8080
+      - 8443
+    conn_state:
+      - SF
+      - S1
+      - RSTO
+    orig_bytes|lt: 4096
+    resp_bytes|lt: 4096
+  filter_internal_destination:
+    id.resp_h|cidr: '192.0.2.0/24'
+  filter_long_lived:
+    duration|gte: 30
+  condition: selection and not 1 of filter_*
+falsepositives:
+  - Software update checkers, telemetry agents and chat clients that poll a fixed endpoint
+  - Any web page that polls an API on a timer while a browser tab stays open
+level: medium
+custom:
+  data_sources:
+    - Zeek conn.log (or any flow record with bytes, duration and state)
+  do_not_alert_when: |
+    The destination resolves to a CDN, update service or SaaS endpoint that
+    many hosts in the estate also talk to; the same volume from one host only
+    is what matters. Before paging, run the interval analysis: if the gaps
+    between connections have low variance the count is a beacon, if they
+    cluster around user activity it is a polling tab. Keep this as a hunt
+    query until that scoring exists in the pipeline.
+  detection_health:
+    added: 2026-09-18
+    last_reviewed: 2026-09-18
+    owner: Mark Peters
+---
+title: Many Short Small Connections To One External Host And Port Within An Hour (correlation)
+status: experimental
+correlation:
+  type: event_count
+  rules:
+    - beacon_fixed_destination_high_count_base
+  group-by:
+    - id.orig_h
+    - id.resp_h
+    - id.resp_p
+  timespan: 1h
+  condition:
+    gte: 20
+level: medium

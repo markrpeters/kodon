@@ -1,0 +1,30 @@
+# The ATT&CK techniques this rule set is meant to cover. Coverage and gaps are
+# computed against this list, not against the whole matrix: a matrix that is
+# red everywhere says nothing about what the rule set was meant to cover.
+# Technique names are from MITRE ATT&CK (https://attack.mitre.org), used under
+# its terms; tactics listed are the ones this rule set watches for.
+techniques:
+  - {technique: T1078.004, name: "Valid Accounts: Cloud Accounts", tactics: [initial-access]}
+  - {technique: T1621, name: "Multi-Factor Authentication Request Generation", tactics: [credential-access]}
+  - {technique: T1110.003, name: "Brute Force: Password Spraying", tactics: [credential-access]}
+  - {technique: T1566.001, name: "Phishing: Spearphishing Attachment", tactics: [initial-access]}
+  - {technique: T1204.002, name: "User Execution: Malicious File", tactics: [execution]}
+  - {technique: T1059.001, name: "Command and Scripting Interpreter: PowerShell", tactics: [execution]}
+  - {technique: T1047, name: "Windows Management Instrumentation", tactics: [execution]}
+  - {technique: T1053.005, name: "Scheduled Task/Job: Scheduled Task", tactics: [persistence]}
+  - {technique: T1098, name: "Account Manipulation", tactics: [persistence]}
+  - {technique: T1136.003, name: "Create Account: Cloud Account", tactics: [persistence]}
+  - {technique: T1127.001, name: "Trusted Developer Utilities Proxy Execution: MSBuild", tactics: [defense-evasion]}
+  - {technique: T1036.005, name: "Masquerading: Match Legitimate Name or Location", tactics: [defense-evasion]}
+  - {technique: T1070.001, name: "Indicator Removal: Clear Windows Event Logs", tactics: [defense-evasion]}
+  - {technique: T1003.001, name: "OS Credential Dumping: LSASS Memory", tactics: [credential-access]}
+  - {technique: T1558.003, name: "Steal or Forge Kerberos Tickets: Kerberoasting", tactics: [credential-access]}
+  - {technique: T1528, name: "Steal Application Access Token", tactics: [credential-access]}
+  - {technique: T1482, name: "Domain Trust Discovery", tactics: [discovery]}
+  - {technique: T1021.006, name: "Remote Services: Windows Remote Management", tactics: [lateral-movement]}
+  - {technique: T1114.003, name: "Email Collection: Email Forwarding Rule", tactics: [collection]}
+  - {technique: T1071.001, name: "Application Layer Protocol: Web Protocols", tactics: [command-and-control]}
+  - {technique: T1571, name: "Non-Standard Port", tactics: [command-and-control]}
+  - {technique: T1105, name: "Ingress Tool Transfer", tactics: [command-and-control]}
+  - {technique: T1048.003, name: "Exfiltration Over Unencrypted Non-C2 Protocol", tactics: [exfiltration]}
+  - {technique: T1567.002, name: "Exfiltration to Cloud Storage", tactics: [exfiltration]}

@@ -1,0 +1,2 @@
+{"ts": "2026-03-04T09:01:00Z", "host": "HOST-A", "user": "alice", "image": "C:\\Windows\\System32\\notepad.exe", "command_line": "notepad.exe notes.txt", "parent_image": "C:\\Windows\\System32\\explorer.exe", "parent_command_line": "explorer.exe", "original_file_name": "notepad.exe"}
+{"ts": "2026-03-04T09:05:00Z", "host": "HOST-A", "user": "alice", "image": "C:\\Windows\\System32\\nltest.exe", "command_line": "nltest /domain_trusts /all_trusts", "parent_image": "C:\\Windows\\System32\\cmd.exe", "parent_command_line": "cmd.exe", "original_file_name": "nltest.exe"}

@@ -1,0 +1,76 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kodon"
+version = "0.0.1"
+description = "Detection-as-code: Sigma rules compiled to Splunk SPL, Sentinel KQL and DuckDB SQL, replay-tested on synthetic telemetry."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{ name = "Mark Peters" }]
+keywords = ["sigma", "detection-engineering", "detection-as-code", "splunk", "kql", "sentinel", "duckdb", "attack", "dfir"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Information Technology",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Security",
+]
+dependencies = [
+    "pysigma>=1.5,<2",
+    "pysigma-backend-splunk>=2.1,<3",
+    "pysigma-backend-kusto>=1.0,<2",
+    "pysigma-backend-sqlite>=1.2,<2",
+    "duckdb>=1.1",
+    "pyyaml>=6",
+    "pydantic>=2,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.5",
+]
+
+[project.scripts]
+kodon = "kodon.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/markrpeters/kodon"
+Issues = "https://github.com/markrpeters/kodon/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kodon"]
+
+# The rules, the public processing pipelines and the coverage scope ship inside
+# the wheel so that `import kodon` gives a consumer the same rule set the tests
+# ran against. The repo keeps them at the top level where reviewers expect them.
+[tool.hatch.build.targets.wheel.force-include]
+"rules" = "kodon/rules"
+"pipelines" = "kodon/pipelines"
+"coverage" = "kodon/coverage"
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "rules", "pipelines", "coverage", "tests", "scripts", "README.md", "LICENSE", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "UP"]
+ignore = [
+    "E501",  # long lines in compiled-query fixtures and rule text
+]

@@ -1,0 +1,2 @@
+{"ts": "2026-03-04T09:02:00Z", "user": "carol@example.com", "operation": "Consent to application", "result": "success", "is_admin_consent": "False", "app_display_name": "Team Wiki", "permissions": "User.Read offline_access"}
+{"ts": "2026-03-04T09:14:00Z", "user": "alice@example.com", "operation": "Consent to application", "result": "success", "is_admin_consent": "False", "app_display_name": "Mail Insights Pro", "permissions": "User.Read Mail.Read offline_access"}

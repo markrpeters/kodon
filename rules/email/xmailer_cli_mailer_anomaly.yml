@@ -1,0 +1,52 @@
+title: Outbound Mail Sent By A Command-Line Mailer
+id: c1d10cc3ef695cb8a6aac4e72f47b18e
+status: experimental
+description: |
+  SMTP sessions whose X-Mailer or User-Agent header names a command-line
+  mailer (Blat, swaks, sendEmail, PowerShell Send-MailMessage). Users send mail
+  from mail clients; scripts and attackers send it from Blat. Written from
+  the pattern: a scheduled mailer job is a quiet exfiltration channel, and
+  the classic false positive is the backup server that has mailed reports
+  with Blat for years.
+references:
+  - https://attack.mitre.org/techniques/T1048/003/
+author: Mark Peters
+date: 2026-09-18
+tags:
+  - attack.t1048.003
+  - attack.exfiltration
+logsource:
+  product: zeek
+  service: smtp
+detection:
+  selection_blat:
+    user_agent|startswith: 'Blat'
+  selection_other_cli:
+    user_agent|contains:
+      - 'swaks'
+      - 'sendEmail'
+      - 'PowerShell'
+  filter_automation_mailboxes:
+    mailfrom:
+      - 'monitoring@example.com'
+      - 'backup@example.com'
+  condition: 1 of selection_* and not filter_automation_mailboxes
+falsepositives:
+  - Backup, monitoring and batch jobs that mail reports with Blat or PowerShell
+  - Developers testing a mail relay with swaks
+level: medium
+custom:
+  data_sources:
+    - Zeek smtp.log (user_agent carries X-Mailer or User-Agent)
+  do_not_alert_when: |
+    The sender address is one of the known automation mailboxes and the
+    recipient is internal; the filter above is that allowlist, by address,
+    not by domain, because a domain-wide exception is what the attacker's
+    scheduled job would hide behind.
+    Alert when the sender is a person's mailbox, the recipient is external, or
+    the message carries an attachment; exfiltration by mail looks like a
+    report job with the wrong recipient.
+  detection_health:
+    added: 2026-09-18
+    last_reviewed: 2026-09-18
+    owner: Mark Peters

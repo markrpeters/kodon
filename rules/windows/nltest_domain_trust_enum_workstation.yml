@@ -1,0 +1,53 @@
+title: Domain Trust Enumeration With nltest From A Workstation
+id: 5be5b657009c527cbe7614de09587d54
+status: experimental
+description: |
+  nltest.exe asked to list domain trusts, trusted domains or domain
+  controllers from a host that is not a domain controller and not a known
+  admin tool. The first thing an operator does on a new foothold is find out
+  what the domain looks like; the first thing a workstation user never does
+  is run nltest. Domain controllers are excluded by the synthetic naming
+  prefix HOST-DC; a deployment substitutes its own.
+references:
+  - https://attack.mitre.org/techniques/T1482/
+author: Mark Peters
+date: 2026-09-18
+tags:
+  - attack.t1482
+  - attack.discovery
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\nltest.exe'
+    CommandLine|contains:
+      - 'domain_trusts'
+      - 'all_trusts'
+      - 'trusted_domains'
+      - 'dclist'
+      - 'dsgetdc'
+  filter_domain_controllers:
+    ComputerName|startswith: 'HOST-DC'
+  filter_admin_tooling:
+    ParentImage|endswith:
+      - '\ServerManager.exe'
+      - '\dsac.exe'
+  condition: selection and not 1 of filter_*
+falsepositives:
+  - Directory administrators troubleshooting trusts from their own workstation
+  - Deployment or inventory scripts that call nltest /dsgetdc to pick a domain controller
+level: medium
+custom:
+  data_sources:
+    - Sysmon Event ID 1 or Windows Security 4688 with command line auditing enabled
+  do_not_alert_when: |
+    The parent is a known management tool or the user is in the directory
+    administrators group and the host is their assigned admin workstation;
+    filter by parent process, not by user name alone, because attackers run as
+    the compromised admin. Treat /dsgetdc on its own as a hunt (scripts use
+    it); /domain_trusts and /all_trusts from a standard user should alert.
+  detection_health:
+    added: 2026-09-18
+    last_reviewed: 2026-09-18
+    owner: Mark Peters
