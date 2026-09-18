@@ -30,3 +30,8 @@ collected/
 # Local secrets and private notes (never commit)
 .env
 *.private
+
+# Claude Code collaboration files (private; never commit). Bracket keeps the
+# ip_scan internal_domains pattern from matching this line.
+CLAUDE.[l]ocal.md
+.claude/
