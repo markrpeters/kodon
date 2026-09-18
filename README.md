@@ -247,6 +247,14 @@ hook to keep it that way.
 - Deployment: push compiled output to a SIEM from CI. Compile is the
   deliverable today; deployment is deliberately not.
 
+## How this is built
+
+Agentic coding tools (Claude Code) are used in this repository under an
+eval-gated methodology: nothing merges without the test suite, the replay
+gate, the data-hygiene scan and its self-test, a cold-read review of
+user-facing text, and a recorded decision log for anything that departs from
+the work order.
+
 ## Why the name
 
 A codon is the smallest unit of genetic code that encodes one instruction. A
